@@ -51,17 +51,27 @@ export default async function decorate(block) {
     contentDiv.className = "carousel-slide-content";
 
     if (cells[1]) {
+      const paragraphs = cells[1].querySelectorAll("p");
       const heading = cells[1].querySelector("h1, h2, h3, h4, h5, h6");
-      if (heading) {
+
+      // Title: use heading if available, otherwise first <p>
+      const titleSource = heading || paragraphs[0];
+      if (titleSource) {
         const h3 = document.createElement("h3");
-        h3.textContent = heading.textContent;
+        h3.textContent = titleSource.textContent;
         contentDiv.append(h3);
       }
 
+      // CTA: use <a> if available, otherwise second <p> as plain text CTA
       const link = cells[1].querySelector("a");
       if (link) {
         link.className = "carousel-cta";
         contentDiv.append(link);
+      } else if (paragraphs[1]) {
+        const cta = document.createElement("span");
+        cta.className = "carousel-cta";
+        cta.textContent = paragraphs[1].textContent;
+        contentDiv.append(cta);
       }
     }
     slide.append(contentDiv);
